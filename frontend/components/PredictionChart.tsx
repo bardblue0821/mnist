@@ -24,7 +24,7 @@ export function PredictionChart({ predictions }: PredictionChartProps) {
         return (
           <div key={digit} className="flex items-center gap-2 mb-1">
             <span className="w-6 text-right font-mono text-lg">{digit}</span>
-            <div className="flex-1 bg-gray-800 rounded h-6 overflow-hidden">
+            <div className="flex-1 bg-zinc-100 rounded h-6 overflow-hidden">
               <div
                 data-testid={`bar-${digit}`}
                 className={`h-full rounded transition-all duration-300 ease-out ${
@@ -33,7 +33,7 @@ export function PredictionChart({ predictions }: PredictionChartProps) {
                 style={{ width: `${normalized * 100}%` }}
               />
             </div>
-            <span className="w-16 text-right text-sm font-mono">
+            <span className="w-16 text-right text-sm font-mono text-zinc-600">
               {percentage}%
             </span>
           </div>
