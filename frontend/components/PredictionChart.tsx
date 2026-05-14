@@ -5,12 +5,21 @@ interface PredictionChartProps {
 }
 
 export function PredictionChart({ predictions }: PredictionChartProps) {
-  const maxProb = Math.max(...predictions.map((p) => p.probability));
+  const probs = predictions.map((p) => p.probability);
+  const minProb = Math.min(...probs);
+  const maxProb = Math.max(...probs);
+  const range = maxProb - minProb;
+
+  const normalize = (prob: number): number => {
+    if (range === 0) return 0;
+    return (prob - minProb) / range;
+  };
 
   return (
     <div className="w-full max-w-md">
       {predictions.map(({ digit, probability }) => {
-        const percentage = (probability * 100).toFixed(1);
+        const normalized = normalize(probability);
+        const percentage = (normalized * 100).toFixed(1);
         const isMax = probability === maxProb && maxProb > 0;
         return (
           <div key={digit} className="flex items-center gap-2 mb-1">
@@ -19,9 +28,9 @@ export function PredictionChart({ predictions }: PredictionChartProps) {
               <div
                 data-testid={`bar-${digit}`}
                 className={`h-full rounded transition-all duration-300 ease-out ${
-                  isMax ? "bg-blue-500" : "bg-gray-500"
+                  isMax ? "bg-teal-400" : "bg-zinc-500"
                 }`}
-                style={{ width: `${probability * 100}%` }}
+                style={{ width: `${normalized * 100}%` }}
               />
             </div>
             <span className="w-16 text-right text-sm font-mono">

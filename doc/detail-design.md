@@ -204,7 +204,7 @@ Props:
       ref={canvasRef}
       width={CANVAS_SIZE}
       height={CANVAS_SIZE}
-      className="border border-gray-600 rounded-lg cursor-crosshair
+      className="border border-teal-700 rounded-lg cursor-crosshair
                  w-full max-w-[280px] aspect-square touch-none"
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
@@ -226,10 +226,16 @@ Props:
 Props:
   predictions: Prediction[]
 
+正規化:
+  - Min-Max 正規化を適用: normalized = (prob - minProb) / (maxProb - minProb)
+  - 全値同一の場合は全て 0% とする
+  - 表示上の確率は 0%〜100% にスケーリングされる
+
 レンダリング:
   <div className="w-full max-w-md">
     {predictions.map(({ digit, probability }) => {
-      const percentage = (probability * 100).toFixed(1);
+      const normalized = normalize(probability);
+      const percentage = (normalized * 100).toFixed(1);
       const isMax = この数字が最大確率かどうか;
       return (
         <div key={digit} className="flex items-center gap-2 mb-1">
@@ -237,8 +243,8 @@ Props:
           <div className="flex-1 bg-gray-800 rounded h-6 overflow-hidden">
             <div
               className={`h-full rounded transition-all duration-300 ease-out
-                         ${isMax ? "bg-blue-500" : "bg-gray-500"}`}
-              style={{ width: `${probability * 100}%` }}
+                         ${isMax ? "bg-teal-400" : "bg-zinc-500"}`}
+              style={{ width: `${normalized * 100}%` }}
             />
           </div>
           <span className="w-16 text-right text-sm font-mono">{percentage}%</span>
@@ -249,7 +255,8 @@ Props:
 ```
 
 - `transition-all duration-300 ease-out` でバーの幅変更時に滑らかなアニメーション
-- 最大確率の数字は `bg-blue-500`、それ以外は `bg-gray-500`
+- 最大確率の数字は `bg-teal-400`、それ以外は `bg-zinc-500`
+- Min-Max 正規化により最大値は常に 100%、最小値は 0% で表示される
 
 #### 2.3.5 `components/WarmupOverlay.tsx`
 
@@ -259,7 +266,7 @@ Props: なし（表示/非表示は親が制御）
 レンダリング:
   <div className="fixed inset-0 z-50 flex flex-col items-center justify-center
                   bg-black/70 text-white">
-    <Loader2 className="h-8 w-8 animate-spin" />  {/* lucide-react */}
+    <Loader2 className="h-8 w-8 animate-spin text-teal-400" />  {/* lucide-react */}
     <p className="mt-4 text-lg">サーバー起動中...</p>
     <p className="mt-2 text-sm text-gray-400">初回アクセス時は30秒ほどかかる場合があります</p>
   </div>
@@ -1072,9 +1079,10 @@ Thumbs.db
 | # | テストケース | 検証内容 |
 |---|---|---|
 | 1 | 全10桁が表示される | 0〜9 のラベルが DOM に存在する |
-| 2 | 確率が%で表示される | "82.0%" のようなテキストが存在する |
-| 3 | 最大確率の数字がハイライトされる | 最大値のバーに `bg-blue-500` クラスがある |
+| 2 | 正規化後の最大確率が100%で表示される | Min-Max 正規化後の最大値が "100.0%" で表示される |
+| 3 | 最大確率の数字がtealでハイライトされる | 最大値のバーに `bg-teal-400` クラスがある |
 | 4 | 初期状態で全て 0% | 全バーの width が "0%" |
+| 5 | 正規化で最大が100%、最小が0%になる | 最大のバーwidth="100%"、最小のバーwidth="0%" |
 
 #### `__tests__/WarmupOverlay.test.tsx`
 

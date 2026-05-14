@@ -24,7 +24,7 @@ export function Canvas({ onDraw, onClear }: CanvasProps) {
         ref={canvasRef}
         width={280}
         height={280}
-        className="border border-gray-600 rounded-lg cursor-crosshair w-full max-w-[280px] aspect-square touch-none"
+        className="border border-teal-700 rounded-lg cursor-crosshair w-full max-w-[280px] aspect-square touch-none"
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
